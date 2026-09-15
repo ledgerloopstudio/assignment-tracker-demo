@@ -1,0 +1,1051 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Assignment &amp; Study Tracker</title>
+<style>
+:root{
+ --ink:#101d26; --ink2:#1b2a36; --paper:#f7f5ef; --card:#ffffff; --line:#dfe4e0;
+ --muted:#5a6b78; --acc:#0f7b6c; --acc2:#0b5f54; --gold:#c9a227; --red:#b3261e;
+ --amber:#b26a00; --blue:#1f5673; --chip:#eef2ee;
+ --r:12px; --sh:0 1px 2px rgba(16,29,38,.06),0 4px 14px rgba(16,29,38,.05);
+}
+[data-dark="1"]{
+ --ink:#e9eef1; --ink2:#cfd8de; --paper:#0d161c; --card:#132029; --line:#24333d;
+ --muted:#93a4b0; --acc:#3fbfa8; --acc2:#7fd8c6; --gold:#e0bd4a; --red:#ff8a80;
+ --amber:#ffc46b; --blue:#7fc3e8; --chip:#1a2831;
+ --sh:0 1px 2px rgba(0,0,0,.4),0 6px 18px rgba(0,0,0,.35);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);
+ font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+.top{position:sticky;top:0;z-index:50;background:var(--card);border-bottom:1px solid var(--line);
+ padding:10px 16px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.brand{font-weight:700;letter-spacing:.2px;display:flex;align-items:center;gap:8px}
+.brand .dot{width:10px;height:10px;border-radius:50%;background:var(--acc)}
+.brand small{display:block;font-weight:500;color:var(--muted);font-size:11px;letter-spacing:.4px}
+.tabs{display:flex;gap:4px;flex-wrap:wrap;margin-left:auto}
+.tab{border:1px solid transparent;background:transparent;color:var(--muted);padding:7px 11px;
+ border-radius:9px;cursor:pointer;font-size:13.5px;font-weight:600}
+.tab:hover{background:var(--chip);color:var(--ink)}
+.tab.on{background:var(--acc);color:#fff}
+.wrap{max-width:1240px;margin:0 auto;padding:18px 16px 60px}
+h2{margin:0 0 4px;font-size:20px;letter-spacing:-.2px}
+.sub{color:var(--muted);font-size:13px;margin-bottom:16px}
+.grid{display:grid;gap:14px}
+.g2{grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+.g3{grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+.g4{grid-template-columns:repeat(auto-fit,minmax(165px,1fr))}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:15px;box-shadow:var(--sh)}
+.card h3{margin:0 0 10px;font-size:13px;text-transform:uppercase;letter-spacing:.7px;color:var(--muted)}
+.kpi{font-size:27px;font-weight:700;letter-spacing:-.6px;color:var(--acc)}
+.kpi.warn{color:var(--amber)} .kpi.bad{color:var(--red)} .kpi.ink{color:var(--ink)}
+.kpi small{font-size:12px;font-weight:600;color:var(--muted);letter-spacing:0}
+.note{font-size:12px;color:var(--muted);margin-top:4px}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+th,td{padding:9px 8px;text-align:left;border-bottom:1px solid var(--line);vertical-align:middle}
+th{font-size:11px;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);font-weight:700}
+tr:last-child td{border-bottom:0}
+.tblwrap{overflow-x:auto}
+.btn{border:1px solid var(--acc);background:var(--acc);color:#fff;padding:8px 13px;border-radius:9px;
+ cursor:pointer;font-size:13.5px;font-weight:600}
+.btn:hover{background:var(--acc2);border-color:var(--acc2)}
+.btn.ghost{background:transparent;color:var(--acc);}
+.btn.ghost:hover{background:var(--chip)}
+.btn.sm{padding:5px 9px;font-size:12.5px;border-radius:7px}
+.btn.danger{border-color:var(--red);background:transparent;color:var(--red)}
+.btn.danger:hover{background:var(--red);color:#fff}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.right{margin-left:auto}
+input,select,textarea{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);
+ border-radius:9px;padding:8px 10px;width:100%}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--acc);outline-offset:1px}
+label{display:block;font-size:12px;font-weight:700;color:var(--muted);margin-bottom:4px;
+ text-transform:uppercase;letter-spacing:.5px}
+.f{margin-bottom:11px}
+.pill{display:inline-block;padding:3px 9px;border-radius:999px;font-size:11.5px;font-weight:700;
+ background:var(--chip);color:var(--ink2);white-space:nowrap}
+.pill.ok{background:rgba(15,123,108,.14);color:var(--acc)}
+.pill.red{background:rgba(179,38,30,.13);color:var(--red)}
+.pill.amber{background:rgba(178,106,0,.15);color:var(--amber)}
+.pill.blue{background:rgba(31,86,115,.14);color:var(--blue)}
+.pill.gold{background:rgba(201,162,39,.18);color:#8a6d10}
+[data-dark="1"] .pill.gold{color:var(--gold)}
+.bar{height:8px;border-radius:999px;background:var(--chip);overflow:hidden}
+.bar i{display:block;height:100%;background:var(--acc);border-radius:999px}
+.bar i.warn{background:var(--amber)} .bar i.bad{background:var(--red)}
+.modal{position:fixed;inset:0;background:rgba(10,20,26,.55);display:flex;align-items:flex-start;
+ justify-content:center;padding:36px 14px;z-index:100;overflow:auto}
+.sheet{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px;
+ width:100%;max-width:560px;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+.sheet h3{margin:0 0 14px;font-size:17px;text-transform:none;letter-spacing:-.2px;color:var(--ink)}
+.empty{text-align:center;padding:34px 16px;color:var(--muted)}
+.empty b{display:block;color:var(--ink);font-size:15px;margin-bottom:5px}
+.tt{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+.tt .col{background:var(--chip);border-radius:10px;padding:10px;min-height:90px}
+.tt .col b{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.6px;
+ color:var(--muted);margin-bottom:7px}
+.tt .slot{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:7px 8px;
+ margin-bottom:6px;font-size:12.5px}
+.tt .slot i{display:block;color:var(--muted);font-style:normal;font-size:11.5px}
+.foot{text-align:center;color:var(--muted);font-size:12px;padding:26px 10px 4px}
+@media print{.top,.tabs,.btn{display:none!important}body{background:#fff}.card{box-shadow:none}}
+.demo-banner{position:sticky;top:0;z-index:9999;background:#B9770E;color:#fff;font:600 13px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;text-align:center;padding:9px 14px}
+.demo-banner a{color:#fff;text-decoration:underline}
+.demo-banner .x{position:absolute;right:10px;top:6px;background:none;border:none;color:#fff;font:inherit;cursor:pointer;opacity:.85;padding:4px 8px}
+.demo-banner .x:hover{opacity:1}
+</style></head><body>
+<div class="demo-banner" id="demoBanner">DEMO — example data, add up to 15 of your own assignments and see whether it thinks the way you do. Nothing is saved permanently and it can reset any time. <a href="https://www.etsy.com/shop/LedgerLoopStudio" target="_blank" rel="noopener">Buy the full version</a> for your own unlimited, permanent copy.<button class="x" onclick="document.getElementById('demoBanner').style.display='none'" aria-label="Dismiss">✕</button></div>
+<div id="app"></div>
+<script id="engine">
+/* ===== ENGINE: pure functions, no DOM. Unit-testable in plain Node. ===== */
+
+var GRADE_POINTS = {
+  "A+": 4.0, "A": 4.0, "A-": 3.7,
+  "B+": 3.3, "B": 3.0, "B-": 2.7,
+  "C+": 2.3, "C": 2.0, "C-": 1.7,
+  "D+": 1.3, "D": 1.0, "D-": 0.7,
+  "F": 0.0
+};
+
+function parseISO(s) {
+  if (!s) return null;
+  var p = String(s).split("-");
+  if (p.length !== 3) return null;
+  var d = new Date(Number(p[0]), Number(p[1]) - 1, Number(p[2]));
+  return isNaN(d.getTime()) ? null : d;
+}
+
+function toISO(d) {
+  if (!d) return "";
+  var m = String(d.getMonth() + 1);
+  var day = String(d.getDate());
+  if (m.length < 2) m = "0" + m;
+  if (day.length < 2) day = "0" + day;
+  return d.getFullYear() + "-" + m + "-" + day;
+}
+
+function daysUntil(fromISO, targetISO) {
+  var a = parseISO(fromISO), b = parseISO(targetISO);
+  if (!a || !b) return null;
+  return Math.round((b - a) / 86400000);
+}
+
+/* overdue | due-today | urgent (<=3d) | soon (<=10d) | later | none */
+function urgency(fromISO, dueISO) {
+  var d = daysUntil(fromISO, dueISO);
+  if (d === null) return "none";
+  if (d < 0) return "overdue";
+  if (d === 0) return "due-today";
+  if (d <= 3) return "urgent";
+  if (d <= 10) return "soon";
+  return "later";
+}
+
+function assignmentById(assignments, id) {
+  for (var i = 0; i < assignments.length; i++) if (assignments[i].id === id) return assignments[i];
+  return null;
+}
+
+function courseById(courses, id) {
+  for (var i = 0; i < courses.length; i++) if (courses[i].id === id) return courses[i];
+  return null;
+}
+
+function assignmentsForCourse(assignments, courseId) {
+  return assignments.filter(function (a) { return a.courseId === courseId; });
+}
+
+function openAssignments(assignments) {
+  return assignments.filter(function (a) { return a.status !== "submitted" && a.status !== "graded"; });
+}
+
+function overdueAssignments(assignments, fromISO) {
+  return openAssignments(assignments).filter(function (a) {
+    return urgency(fromISO, a.dueDate) === "overdue";
+  });
+}
+
+function dueWithin(assignments, fromISO, days) {
+  return openAssignments(assignments).filter(function (a) {
+    var d = daysUntil(fromISO, a.dueDate);
+    return d !== null && d >= 0 && d <= days;
+  }).sort(function (x, y) { return String(x.dueDate).localeCompare(String(y.dueDate)); });
+}
+
+function completionPct(assignments) {
+  if (!assignments.length) return null;
+  var done = assignments.filter(function (a) {
+    return a.status === "submitted" || a.status === "graded";
+  }).length;
+  return Math.round((done / assignments.length) * 100);
+}
+
+function countByStatus(assignments) {
+  var out = { "not-started": 0, "in-progress": 0, "submitted": 0, "graded": 0 };
+  assignments.forEach(function (a) {
+    if (out[a.status] === undefined) out[a.status] = 0;
+    out[a.status]++;
+  });
+  return out;
+}
+
+/* Weighted course grade from graded assignments: sum(score/max * weight) / sum(weight) * 100 */
+function courseGradePct(assignments, courseId) {
+  var list = assignmentsForCourse(assignments, courseId).filter(function (a) {
+    return a.status === "graded" && Number(a.maxScore) > 0 && a.score !== "" && a.score !== null && a.score !== undefined;
+  });
+  if (!list.length) return null;
+  var wsum = 0, acc = 0;
+  list.forEach(function (a) {
+    var w = Number(a.weight) > 0 ? Number(a.weight) : 1;
+    acc += (Number(a.score) / Number(a.maxScore)) * w;
+    wsum += w;
+  });
+  if (!wsum) return null;
+  return Math.round((acc / wsum) * 1000) / 10;
+}
+
+function pctToLetter(pct) {
+  if (pct === null || pct === undefined || pct === "") return "";
+  var p = Number(pct);
+  if (p >= 97) return "A+";
+  if (p >= 93) return "A";
+  if (p >= 90) return "A-";
+  if (p >= 87) return "B+";
+  if (p >= 83) return "B";
+  if (p >= 80) return "B-";
+  if (p >= 77) return "C+";
+  if (p >= 73) return "C";
+  if (p >= 70) return "C-";
+  if (p >= 67) return "D+";
+  if (p >= 63) return "D";
+  if (p >= 60) return "D-";
+  return "F";
+}
+
+function gradePoints(letter) {
+  var g = GRADE_POINTS[String(letter).toUpperCase()];
+  return g === undefined ? null : g;
+}
+
+/* GPA across courses that have a letter grade (or a computed one) and credits */
+function calcGPA(courses, assignments) {
+  var pts = 0, creds = 0;
+  courses.forEach(function (c) {
+    var credits = Number(c.credits);
+    if (!(credits > 0)) return;
+    var letter = c.finalGrade;
+    if (!letter) {
+      var pct = courseGradePct(assignments, c.id);
+      if (pct === null) return;
+      letter = pctToLetter(pct);
+    }
+    var gp = gradePoints(letter);
+    if (gp === null) return;
+    pts += gp * credits;
+    creds += credits;
+  });
+  if (!creds) return null;
+  return Math.round((pts / creds) * 100) / 100;
+}
+
+function creditsEarned(courses) {
+  var t = 0;
+  courses.forEach(function (c) {
+    if (c.finalGrade && gradePoints(c.finalGrade) !== null && gradePoints(c.finalGrade) > 0) {
+      t += Number(c.credits) > 0 ? Number(c.credits) : 0;
+    }
+  });
+  return t;
+}
+
+function creditsRemaining(courses, degreeTotalCredits) {
+  var need = Number(degreeTotalCredits);
+  if (!(need > 0)) return null;
+  return Math.max(0, need - creditsEarned(courses));
+}
+
+function gpaBySemester(courses, assignments) {
+  var groups = {};
+  courses.forEach(function (c) {
+    var s = c.semester || "Unassigned";
+    if (!groups[s]) groups[s] = [];
+    groups[s].push(c);
+  });
+  var out = {};
+  Object.keys(groups).forEach(function (s) {
+    out[s] = calcGPA(groups[s], assignments);
+  });
+  return out;
+}
+
+function upcomingExams(exams, fromISO, days) {
+  return exams.filter(function (e) {
+    var d = daysUntil(fromISO, e.date);
+    return d !== null && d >= 0 && d <= days;
+  }).sort(function (x, y) { return String(x.date).localeCompare(String(y.date)); });
+}
+
+function studyHoursLogged(assignments) {
+  var t = 0;
+  assignments.forEach(function (a) { if (Number(a.hours) > 0) t += Number(a.hours); });
+  return Math.round(t * 10) / 10;
+}
+
+function timetableForDay(classes, day) {
+  return classes.filter(function (c) { return c.day === day; })
+    .sort(function (x, y) { return String(x.start).localeCompare(String(y.start)); });
+}
+
+function summaryReport(state, todayISO) {
+  var a = state.assignments || [], c = state.courses || [], e = state.exams || [];
+  return {
+    totalAssignments: a.length,
+    open: openAssignments(a).length,
+    overdue: overdueAssignments(a, todayISO).length,
+    dueThisWeek: dueWithin(a, todayISO, 7).length,
+    completion: completionPct(a),
+    courses: c.length,
+    gpa: calcGPA(c, a),
+    creditsEarned: creditsEarned(c),
+    examsUpcoming: upcomingExams(e, todayISO, 30).length,
+    studyHours: studyHoursLogged(a),
+    byStatus: countByStatus(a)
+  };
+}
+
+function toCSV(assignments, courses) {
+  var head = ["Title", "Course", "Type", "Due Date", "Status", "Weight %", "Score", "Max Score", "Hours"];
+  var lines = [head.join(",")];
+  assignments.forEach(function (a) {
+    var course = courseById(courses, a.courseId);
+    var row = [
+      a.title, course ? course.name : "", a.type, a.dueDate, a.status,
+      a.weight, a.score, a.maxScore, a.hours
+    ].map(function (v) {
+      var s = (v === null || v === undefined) ? "" : String(v);
+      return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+    });
+    lines.push(row.join(","));
+  });
+  return lines.join("\n");
+}
+
+if (typeof module !== "undefined" && module.exports) {
+  module.exports = {
+    GRADE_POINTS: GRADE_POINTS,
+    parseISO: parseISO, toISO: toISO, daysUntil: daysUntil, urgency: urgency,
+    assignmentById: assignmentById, courseById: courseById,
+    assignmentsForCourse: assignmentsForCourse, openAssignments: openAssignments,
+    overdueAssignments: overdueAssignments, dueWithin: dueWithin,
+    completionPct: completionPct, countByStatus: countByStatus,
+    courseGradePct: courseGradePct, pctToLetter: pctToLetter, gradePoints: gradePoints,
+    calcGPA: calcGPA, creditsEarned: creditsEarned, creditsRemaining: creditsRemaining,
+    gpaBySemester: gpaBySemester, upcomingExams: upcomingExams,
+    studyHoursLogged: studyHoursLogged, timetableForDay: timetableForDay,
+    summaryReport: summaryReport, toCSV: toCSV
+  };
+}
+</script>
+<script id="uiapp">
+/* ===== UI ===== */
+var KEY = "llsAssignmentTracker_v1";
+/* ---- demo-only limit: this block exists only in the public try-it demo, never in the sold product ---- */
+var DEMO_MODE = true, DEMO_ASSIGN_LIMIT = 22; /* 7 seeded + 15 room to try adding your own */
+function demoLimitReached(){
+  if(!DEMO_MODE) return false;
+  if(!STATE || !STATE.assignments || STATE.assignments.length < DEMO_ASSIGN_LIMIT) return false;
+  alert("You've reached the "+DEMO_ASSIGN_LIMIT+"-assignment demo limit.\n\nThis is just a preview — buy the full version for unlimited assignments, all features unlocked, and your own permanent copy.");
+  return true;
+}
+var STATE = null, VIEW = "dash", MODAL = null, EDIT = null, TTDAY = "Mon";
+var DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri"];
+var TABS = [
+  ["dash", "Dashboard"], ["assignments", "Assignments"], ["courses", "Courses"],
+  ["timetable", "Timetable"], ["exams", "Exams"], ["grades", "Grades & GPA"],
+  ["degree", "Degree Plan"], ["reports", "Reports"]
+];
+var STATUSES = ["not-started", "in-progress", "submitted", "graded"];
+var TYPES = ["homework", "essay", "quiz", "lab", "project", "presentation", "reading", "other"];
+var LETTERS = ["", "A+", "A", "A-", "B+", "B", "B-", "C+", "C", "C-", "D+", "D", "D-", "F"];
+
+function uid() { return "id" + Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
+function esc(s) {
+  return String(s === null || s === undefined ? "" : s)
+    .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+}
+function todayISO() { return toISO(new Date()); }
+
+function blank() {
+  return { assignments: [], courses: [], classes: [], exams: [], settings: { dark: "0", degreeCredits: 120, targetGPA: 3.5 } };
+}
+
+function seed() {
+  var t = new Date(), iso = function (off) { var d = new Date(t); d.setDate(d.getDate() + off); return toISO(d); };
+  var c1 = uid(), c2 = uid(), c3 = uid();
+  return {
+    courses: [
+      { id: c1, name: "Calculus II", code: "MATH201", credits: 4, semester: "Fall 2026", instructor: "Dr. Reyes", finalGrade: "" },
+      { id: c2, name: "World History", code: "HIST110", credits: 3, semester: "Fall 2026", instructor: "Prof. Adeyemi", finalGrade: "" },
+      { id: c3, name: "Intro Physics", code: "PHYS101", credits: 4, semester: "Spring 2026", instructor: "Dr. Novak", finalGrade: "A-" }
+    ],
+    assignments: [
+      { id: uid(), courseId: c1, title: "Problem Set 4", type: "homework", dueDate: iso(-2), status: "not-started", weight: 10, score: "", maxScore: 100, hours: 0, notes: "Sections 5.1-5.4" },
+      { id: uid(), courseId: c1, title: "Midterm Essay", type: "essay", dueDate: iso(3), status: "in-progress", weight: 25, score: "", maxScore: 100, hours: 4, notes: "1500 words" },
+      { id: uid(), courseId: c1, title: "Quiz 1", type: "quiz", dueDate: iso(-16), status: "graded", weight: 5, score: 45, maxScore: 50, hours: 1, notes: "" },
+      { id: uid(), courseId: c1, title: "Quiz 2", type: "quiz", dueDate: iso(-9), status: "graded", weight: 5, score: 38, maxScore: 50, hours: 1.5, notes: "" },
+      { id: uid(), courseId: c2, title: "Reading Response 3", type: "reading", dueDate: iso(1), status: "in-progress", weight: 10, score: "", maxScore: 100, hours: 2, notes: "" },
+      { id: uid(), courseId: c2, title: "Term Paper", type: "essay", dueDate: iso(38), status: "not-started", weight: 30, score: "", maxScore: 100, hours: 0, notes: "Pick topic by week 8" },
+      { id: uid(), courseId: c3, title: "Lab Report 6", type: "lab", dueDate: iso(-40), status: "graded", weight: 15, score: 88, maxScore: 100, hours: 3, notes: "" }
+    ],
+    classes: [
+      { id: uid(), courseId: c1, day: "Mon", start: "09:00", end: "10:30", room: "Maths A1" },
+      { id: uid(), courseId: c1, day: "Wed", start: "09:00", end: "10:30", room: "Maths A1" },
+      { id: uid(), courseId: c2, day: "Tue", start: "13:00", end: "14:30", room: "Hum 204" },
+      { id: uid(), courseId: c2, day: "Thu", start: "13:00", end: "14:30", room: "Hum 204" },
+      { id: uid(), courseId: c1, day: "Fri", start: "11:00", end: "12:00", room: "Tutorial B" }
+    ],
+    exams: [
+      { id: uid(), courseId: c1, title: "Calculus II Midterm", date: iso(12), start: "09:00", location: "Exam Hall B", weight: 30, notes: "Chapters 1-6" },
+      { id: uid(), courseId: c2, title: "History Final", date: iso(70), start: "14:00", location: "Room 12", weight: 40, notes: "" }
+    ],
+    settings: { dark: "0", degreeCredits: 120, targetGPA: 3.5 }
+  };
+}
+
+function load() {
+  try {
+    var raw = localStorage.getItem(KEY);
+    if (raw) { STATE = JSON.parse(raw); }
+  } catch (e) { STATE = null; }
+  if (!STATE || !STATE.assignments) STATE = seed();
+  if (!STATE.settings) STATE.settings = { dark: "0", degreeCredits: 120, targetGPA: 3.5 };
+  if (!STATE.classes) STATE.classes = [];
+  if (!STATE.exams) STATE.exams = [];
+  document.documentElement.setAttribute("data-dark", STATE.settings.dark === "1" ? "1" : "0");
+}
+function save() {
+  try { localStorage.setItem(KEY, JSON.stringify(STATE)); } catch (e) { }
+}
+
+function el(tag, attrs, html) {
+  var a = "";
+  if (attrs) for (var k in attrs) if (attrs[k] !== null && attrs[k] !== undefined) a += " " + k + '="' + String(attrs[k]).replace(/"/g, "&quot;") + '"';
+  return "<" + tag + a + ">" + (html === undefined ? "" : html) + "</" + tag + ">";
+}
+
+function urgPill(dueISO, status) {
+  if (status === "submitted") return el("span", { "class": "pill ok" }, "Submitted");
+  if (status === "graded") return el("span", { "class": "pill blue" }, "Graded");
+  var u = urgency(todayISO(), dueISO);
+  var d = daysUntil(todayISO(), dueISO);
+  if (u === "overdue") return el("span", { "class": "pill red" }, Math.abs(d) + "d overdue");
+  if (u === "due-today") return el("span", { "class": "pill red" }, "Due today");
+  if (u === "urgent") return el("span", { "class": "pill amber" }, "In " + d + "d");
+  if (u === "soon") return el("span", { "class": "pill gold" }, "In " + d + "d");
+  if (u === "later") return el("span", { "class": "pill" }, "In " + d + "d");
+  return el("span", { "class": "pill" }, "No date");
+}
+
+function courseName(id) { var c = courseById(STATE.courses, id); return c ? c.name : "—"; }
+function courseOpts(sel) {
+  return STATE.courses.map(function (c) {
+    return el("option", { value: c.id, selected: c.id === sel ? "selected" : null }, esc(c.name + (c.code ? " (" + c.code + ")" : "")));
+  }).join("");
+}
+function opts(list, sel) {
+  return list.map(function (v) {
+    return el("option", { value: v, selected: v === sel ? "selected" : null }, esc(v === "" ? "—" : v));
+  }).join("");
+}
+
+/* ---------- views ---------- */
+
+function viewDash() {
+  var t = todayISO();
+  var r = summaryReport(STATE, t);
+  var soon = dueWithin(STATE.assignments, t, 10);
+  var over = overdueAssignments(STATE.assignments, t);
+  var ex = upcomingExams(STATE.exams, t, 30);
+  var gpa = r.gpa;
+  var target = Number(STATE.settings.targetGPA);
+
+  var kpis = el("div", { "class": "grid g4" },
+    el("div", { "class": "card" }, el("h3", {}, "Open assignments") +
+      el("div", { "class": "kpi ink" }, r.open) +
+      el("div", { "class": "note" }, r.totalAssignments + " tracked in total")) +
+    el("div", { "class": "card" }, el("h3", {}, "Overdue") +
+      el("div", { "class": "kpi " + (r.overdue ? "bad" : "") }, r.overdue) +
+      el("div", { "class": "note" }, r.overdue ? "Needs attention today" : "Nothing overdue")) +
+    el("div", { "class": "card" }, el("h3", {}, "Due this week") +
+      el("div", { "class": "kpi " + (r.dueThisWeek ? "warn" : "") }, r.dueThisWeek) +
+      el("div", { "class": "note" }, "Next 7 days")) +
+    el("div", { "class": "card" }, el("h3", {}, "Current GPA") +
+      el("div", { "class": "kpi" }, gpa === null ? "—" : gpa.toFixed(2)) +
+      el("div", { "class": "note" }, gpa === null ? "Grade something to calculate" :
+        (target > 0 ? (gpa >= target ? "At or above your " + target.toFixed(2) + " target" : (target - gpa).toFixed(2) + " below target") : "No target set")))
+  );
+
+  var prog = r.completion === null ? "" : el("div", { "class": "card" },
+    el("h3", {}, "Semester progress") +
+    el("div", { "class": "row" }, el("div", { style: "flex:1" }, el("div", { "class": "bar" },
+      el("i", { style: "width:" + r.completion + "%" }))) + el("b", {}, r.completion + "%")) +
+    el("div", { "class": "note" }, r.byStatus["submitted"] + " submitted · " + r.byStatus["graded"] +
+      " graded · " + r.byStatus["in-progress"] + " in progress · " + r.byStatus["not-started"] + " not started"));
+
+  function listCard(title, items, renderer, emptyMsg) {
+    var body = items.length
+      ? el("div", { "class": "tblwrap" }, el("table", {}, items.map(renderer).join("")))
+      : el("div", { "class": "note" }, emptyMsg);
+    return el("div", { "class": "card" }, el("h3", {}, title) + body);
+  }
+
+  var overCard = listCard("Overdue", over, function (a) {
+    return el("tr", {}, el("td", {}, esc(a.title) + el("div", { "class": "note" }, esc(courseName(a.courseId)))) +
+      el("td", { style: "text-align:right" }, urgPill(a.dueDate, a.status)));
+  }, "Nothing overdue — good.");
+
+  var soonCard = listCard("Due in the next 10 days", soon, function (a) {
+    return el("tr", {}, el("td", {}, esc(a.title) + el("div", { "class": "note" }, esc(courseName(a.courseId)) + " · " + esc(a.type))) +
+      el("td", { style: "text-align:right" }, esc(a.dueDate) + "<br>" + urgPill(a.dueDate, a.status)));
+  }, "Nothing due in the next 10 days.");
+
+  var examCard = listCard("Exams in the next 30 days", ex, function (e) {
+    var d = daysUntil(t, e.date);
+    return el("tr", {}, el("td", {}, esc(e.title) + el("div", { "class": "note" }, esc(courseName(e.courseId)) + (e.location ? " · " + esc(e.location) : ""))) +
+      el("td", { style: "text-align:right" }, esc(e.date) + "<br>" +
+        el("span", { "class": "pill " + (d <= 7 ? "amber" : "") }, "in " + d + "d"));
+  }, "No exams in the next 30 days.");
+
+  var today = timetableForDay(STATE.classes, DAYS[Math.min(Math.max(new Date().getDay() - 1, 0), 4)]);
+  var ttCard = listCard("Today's classes", today, function (c) {
+    return el("tr", {}, el("td", {}, esc(courseName(c.courseId)) + el("div", { "class": "note" }, esc(c.room || ""))) +
+      el("td", { style: "text-align:right" }, esc(c.start) + " – " + esc(c.end));
+  }, "No classes scheduled for today.");
+
+  return el("h2", {}, "Dashboard") + el("div", { "class": "sub" }, "Everything due, graded and scheduled — in one screen.") +
+    kpis + el("div", { style: "height:14px" }) + prog + el("div", { style: "height:14px" }) +
+    el("div", { "class": "grid g2" }, overCard + soonCard) + el("div", { style: "height:14px" }) +
+    el("div", { "class": "grid g2" }, examCard + ttCard);
+}
+
+function viewAssignments() {
+  var t = todayISO();
+  var rows = STATE.assignments.slice().sort(function (a, b) {
+    return String(a.dueDate || "9999").localeCompare(String(b.dueDate || "9999"));
+  }).map(function (a) {
+    var pct = (a.status === "graded" && Number(a.maxScore) > 0 && a.score !== "")
+      ? Math.round((Number(a.score) / Number(a.maxScore)) * 1000) / 10 : null;
+    return el("tr", {},
+      el("td", {}, el("b", {}, esc(a.title)) + el("div", { "class": "note" }, esc(a.notes || ""))) +
+      el("td", {}, esc(courseName(a.courseId))) +
+      el("td", {}, el("span", { "class": "pill" }, esc(a.type))) +
+      el("td", {}, esc(a.dueDate || "—")) +
+      el("td", {}, urgPill(a.dueDate, a.status)) +
+      el("td", {}, a.weight === "" || a.weight === null ? "—" : esc(a.weight) + "%") +
+      el("td", {}, pct === null ? "—" : pct + "%") +
+      el("td", {}, Number(a.hours) > 0 ? esc(a.hours) + "h" : "—") +
+      el("td", { style: "text-align:right;white-space:nowrap" },
+        el("button", { "class": "btn ghost sm", "data-edit-a": a.id }, "Edit") + " " +
+        el("button", { "class": "btn danger sm", "data-del-a": a.id }, "×"))
+    );
+  }).join("");
+
+  var table = STATE.assignments.length ? el("div", { "class": "tblwrap" }, el("table", {},
+    el("tr", {}, ["Assignment", "Course", "Type", "Due", "Status", "Weight", "Score", "Hours", ""]
+      .map(function (h) { return el("th", {}, h); }).join("")) + rows)) :
+    el("div", { "class": "empty" }, el("b", {}, "No assignments yet") + "Add your first assignment to start tracking deadlines.");
+
+  return el("h2", {}, "Assignments") +
+    el("div", { "class": "sub" }, "Every assignment with its course, weight, deadline and grade.") +
+    el("div", { "class": "row", style: "margin-bottom:12px" },
+      el("button", { "class": "btn", "data-new-a": "1" }, "+ Add assignment") +
+      el("button", { "class": "btn ghost", "data-csv": "1" }, "Export CSV") +
+      el("span", { "class": "right note" }, STATE.courses.length ? "" : "Add a course first so assignments can be linked.")) +
+    el("div", { "class": "card" }, table);
+}
+
+function viewCourses() {
+  var rows = STATE.courses.map(function (c) {
+    var pct = courseGradePct(STATE.assignments, c.id);
+    var letter = c.finalGrade || (pct === null ? "" : pctToLetter(pct));
+    var mine = assignmentsForCourse(STATE.assignments, c.id);
+    var comp = completionPct(mine);
+    return el("tr", {},
+      el("td", {}, el("b", {}, esc(c.name)) + el("div", { "class": "note" }, esc(c.code || "") + (c.instructor ? " · " + esc(c.instructor) : ""))) +
+      el("td", {}, esc(c.semester || "—")) +
+      el("td", {}, esc(c.credits || 0)) +
+      el("td", {}, mine.length + el("div", { "class": "note" }, comp === null ? "" : comp + "% done")) +
+      el("td", {}, pct === null ? "—" : pct + "%") +
+      el("td", {}, letter ? el("span", { "class": "pill ok" }, esc(letter)) + (c.finalGrade ? el("div", { "class": "note" }, "final") : el("div", { "class": "note" }, "projected")) : "—") +
+      el("td", { style: "text-align:right;white-space:nowrap" },
+        el("button", { "class": "btn ghost sm", "data-edit-c": c.id }, "Edit") + " " +
+        el("button", { "class": "btn danger sm", "data-del-c": c.id }, "×"))
+    );
+  }).join("");
+
+  var table = STATE.courses.length ? el("div", { "class": "tblwrap" }, el("table", {},
+    el("tr", {}, ["Course", "Semester", "Credits", "Assignments", "Weighted %", "Grade", ""]
+      .map(function (h) { return el("th", {}, h); }).join("")) + rows)) :
+    el("div", { "class": "empty" }, el("b", {}, "No courses yet") + "Add your courses, then link assignments and classes to them.");
+
+  return el("h2", {}, "Courses") +
+    el("div", { "class": "sub" }, "Weighted percentage is calculated from your graded assignments. Set a final grade to lock it.") +
+    el("div", { "class": "row", style: "margin-bottom:12px" }, el("button", { "class": "btn", "data-new-c": "1" }, "+ Add course")) +
+    el("div", { "class": "card" }, table);
+}
+
+function viewTimetable() {
+  var cols = DAYS.map(function (d) {
+    var slots = timetableForDay(STATE.classes, d).map(function (c) {
+      return el("div", { "class": "slot" }, el("b", {}, esc(courseName(c.courseId))) +
+        el("i", {}, esc(c.start) + "–" + esc(c.end) + (c.room ? " · " + esc(c.room) : "")) +
+        el("button", { "class": "btn danger sm", "data-del-t": c.id, style: "margin-top:5px" }, "Remove"));
+    }).join("") || el("div", { "class": "note" }, "—");
+    return el("div", { "class": "col" }, el("b", {}, d) + slots);
+  }).join("");
+
+  return el("h2", {}, "Timetable") +
+    el("div", { "class": "sub" }, "Your weekly class schedule. Today's classes also show on the dashboard.") +
+    el("div", { "class": "row", style: "margin-bottom:12px" }, el("button", { "class": "btn", "data-new-t": "1" }, "+ Add class")) +
+    el("div", { "class": "card" }, el("div", { "class": "tt" }, cols));
+}
+
+function viewExams() {
+  var t = todayISO();
+  var rows = STATE.exams.slice().sort(function (a, b) {
+    return String(a.date || "9999").localeCompare(String(b.date || "9999"));
+  }).map(function (e) {
+    var d = daysUntil(t, e.date);
+    var pill = d === null ? el("span", { "class": "pill" }, "No date")
+      : d < 0 ? el("span", { "class": "pill" }, "Past")
+        : el("span", { "class": "pill " + (d <= 7 ? "amber" : d <= 30 ? "gold" : "") }, "in " + d + " days");
+    return el("tr", {},
+      el("td", {}, el("b", {}, esc(e.title)) + el("div", { "class": "note" }, esc(e.notes || ""))) +
+      el("td", {}, esc(courseName(e.courseId))) +
+      el("td", {}, esc(e.date || "—") + (e.start ? el("div", { "class": "note" }, esc(e.start)) : "")) +
+      el("td", {}, pill) +
+      el("td", {}, esc(e.location || "—")) +
+      el("td", {}, e.weight ? esc(e.weight) + "%" : "—") +
+      el("td", { style: "text-align:right;white-space:nowrap" },
+        el("button", { "class": "btn ghost sm", "data-edit-e": e.id }, "Edit") + " " +
+        el("button", { "class": "btn danger sm", "data-del-e": e.id }, "×"))
+    );
+  }).join("");
+
+  var table = STATE.exams.length ? el("div", { "class": "tblwrap" }, el("table", {},
+    el("tr", {}, ["Exam", "Course", "Date", "Countdown", "Location", "Weight", ""]
+      .map(function (h) { return el("th", {}, h); }).join("")) + rows)) :
+    el("div", { "class": "empty" }, el("b", {}, "No exams yet") + "Add exam dates to get a countdown on your dashboard.");
+
+  return el("h2", {}, "Exams") +
+    el("div", { "class": "sub" }, "Exam dates with a live countdown, so revision never starts too late.") +
+    el("div", { "class": "row", style: "margin-bottom:12px" }, el("button", { "class": "btn", "data-new-e": "1" }, "+ Add exam")) +
+    el("div", { "class": "card" }, table);
+}
+
+function viewGrades() {
+  var gpa = calcGPA(STATE.courses, STATE.assignments);
+  var bySem = gpaBySemester(STATE.courses, STATE.assignments);
+  var target = Number(STATE.settings.targetGPA);
+
+  var semRows = Object.keys(bySem).sort().map(function (s) {
+    var g = bySem[s];
+    return el("tr", {}, el("td", {}, esc(s)) +
+      el("td", {}, g === null ? "—" : g.toFixed(2)) +
+      el("td", {}, g === null ? "" : el("div", { "class": "bar" },
+        el("i", { "class": g >= 3.5 ? "" : g >= 2.5 ? "warn" : "bad", style: "width:" + Math.round((g / 4) * 100) + "%" }))));
+  }).join("");
+
+  var courseRows = STATE.courses.map(function (c) {
+    var pct = courseGradePct(STATE.assignments, c.id);
+    var letter = c.finalGrade || (pct === null ? "" : pctToLetter(pct));
+    var gp = letter ? gradePoints(letter) : null;
+    var graded = assignmentsForCourse(STATE.assignments, c.id).filter(function (a) { return a.status === "graded"; }).length;
+    return el("tr", {},
+      el("td", {}, esc(c.name) + el("div", { "class": "note" }, graded + " graded item" + (graded === 1 ? "" : "s"))) +
+      el("td", {}, esc(c.credits || 0)) +
+      el("td", {}, pct === null ? "—" : pct + "%") +
+      el("td", {}, letter ? esc(letter) : "—") +
+      el("td", {}, gp === null ? "—" : gp.toFixed(1)) +
+      el("td", {}, gp === null || !(Number(c.credits) > 0) ? "—" : (gp * Number(c.credits)).toFixed(1)));
+  }).join("");
+
+  return el("h2", {}, "Grades & GPA") +
+    el("div", { "class": "sub" }, "GPA is credit-weighted on a 4.0 scale. A course with no final grade uses its projected grade from graded work.") +
+    el("div", { "class": "grid g3" },
+      el("div", { "class": "card" }, el("h3", {}, "Cumulative GPA") +
+        el("div", { "class": "kpi" }, gpa === null ? "—" : gpa.toFixed(2)) +
+        el("div", { "class": "note" }, "out of 4.00")) +
+      el("div", { "class": "card" }, el("h3", {}, "Target GPA") +
+        el("div", { "class": "kpi ink" }, target > 0 ? target.toFixed(2) : "—") +
+        el("div", { "class": "note" }, gpa === null || !(target > 0) ? "Set in Degree Plan" :
+          (gpa >= target ? "On track" : (target - gpa).toFixed(2) + " to go"))) +
+      el("div", { "class": "card" }, el("h3", {}, "Credits earned") +
+        el("div", { "class": "kpi ink" }, creditsEarned(STATE.courses)) +
+        el("div", { "class": "note" }, "courses with a final grade above F"))) +
+    el("div", { style: "height:14px" }) +
+    el("div", { "class": "grid g2" },
+      el("div", { "class": "card" }, el("h3", {}, "GPA by semester") +
+        (semRows ? el("div", { "class": "tblwrap" }, el("table", {},
+          el("tr", {}, ["Semester", "GPA", ""].map(function (h) { return el("th", {}, h); }).join("")) + semRows))
+          : el("div", { "class": "note" }, "Add courses with a semester to see this."))) +
+      el("div", { "class": "card" }, el("h3", {}, "Grade points by course") +
+        (courseRows ? el("div", { "class": "tblwrap" }, el("table", {},
+          el("tr", {}, ["Course", "Cr", "Weighted %", "Grade", "Points", "Cr × Pts"].map(function (h) { return el("th", {}, h); }).join("")) + courseRows))
+          : el("div", { "class": "note" }, "No courses yet."))));
+}
+
+function viewDegree() {
+  var need = Number(STATE.settings.degreeCredits);
+  var earned = creditsEarned(STATE.courses);
+  var left = creditsRemaining(STATE.courses, need);
+  var pctDone = need > 0 ? Math.min(100, Math.round((earned / need) * 100)) : null;
+  var gpa = calcGPA(STATE.courses, STATE.assignments);
+
+  var semGroups = {};
+  STATE.courses.forEach(function (c) {
+    var s = c.semester || "Unassigned";
+    if (!semGroups[s]) semGroups[s] = [];
+    semGroups[s].push(c);
+  });
+  var semCards = Object.keys(semGroups).sort().map(function (s) {
+    var list = semGroups[s];
+    var cr = list.reduce(function (t, c) { return t + (Number(c.credits) > 0 ? Number(c.credits) : 0); }, 0);
+    var g = gpaBySemester({ length: 0 } && list, STATE.assignments);
+    var sg = calcGPA(list, STATE.assignments);
+    return el("div", { "class": "card" },
+      el("h3", {}, esc(s)) +
+      el("div", { "class": "row" }, el("span", { "class": "pill blue" }, cr + " credits") + " " +
+        el("span", { "class": "pill" }, "GPA " + (sg === null ? "—" : sg.toFixed(2)))) +
+      el("div", { style: "margin-top:9px" }, list.map(function (c) {
+        var letter = c.finalGrade || "";
+        return el("div", { "class": "note", style: "margin-bottom:3px" },
+          esc(c.name) + " · " + (Number(c.credits) || 0) + "cr" + (letter ? " · " + esc(letter) : ""));
+      }).join("")));
+  }).join("");
+
+  return el("h2", {}, "Degree Plan") +
+    el("div", { "class": "sub" }, "Multi-year view: how many credits you have, how many are left, and where your GPA sits against your target.") +
+    el("div", { "class": "grid g4" },
+      el("div", { "class": "card" }, el("h3", {}, "Credits earned") + el("div", { "class": "kpi" }, earned)) +
+      el("div", { "class": "card" }, el("h3", {}, "Credits required") + el("div", { "class": "kpi ink" }, need > 0 ? need : "—")) +
+      el("div", { "class": "card" }, el("h3", {}, "Credits remaining") + el("div", { "class": "kpi warn" }, left === null ? "—" : left)) +
+      el("div", { "class": "card" }, el("h3", {}, "Cumulative GPA") + el("div", { "class": "kpi" }, gpa === null ? "—" : gpa.toFixed(2)))) +
+    el("div", { style: "height:14px" }) +
+    (pctDone === null ? "" : el("div", { "class": "card" }, el("h3", {}, "Degree progress") +
+      el("div", { "class": "row" }, el("div", { style: "flex:1" }, el("div", { "class": "bar" }, el("i", { style: "width:" + pctDone + "%" }))) + el("b", {}, pctDone + "%")) +
+      el("div", { "class": "note" }, earned + " of " + need + " credits complete"))) +
+    el("div", { style: "height:14px" }) +
+    el("div", { "class": "card" },
+      el("h3", {}, "Plan settings") +
+      el("div", { "class": "grid g2" },
+        el("div", { "class": "f" }, el("label", {}, "Total credits required") +
+          el("input", { type: "number", min: "0", step: "1", id: "setCredits", value: need > 0 ? need : "" })) +
+        el("div", { "class": "f" }, el("label", {}, "Target GPA (0-4)") +
+          el("input", { type: "number", min: "0", max: "4", step: "0.01", id: "setGpa", value: Number(STATE.settings.targetGPA) > 0 ? STATE.settings.targetGPA : "" }))) +
+      el("button", { "class": "btn", "data-save-plan": "1" }, "Save plan")) +
+    el("div", { style: "height:14px" }) +
+    (semCards ? el("div", { "class": "grid g3" }, semCards) : "");
+}
+
+function viewReports() {
+  var t = todayISO();
+  var r = summaryReport(STATE, t);
+  var byType = {};
+  STATE.assignments.forEach(function (a) { byType[a.type] = (byType[a.type] || 0) + 1; });
+
+  var statusRows = Object.keys(r.byStatus).map(function (k) {
+    var n = r.byStatus[k], pct = r.totalAssignments ? Math.round((n / r.totalAssignments) * 100) : 0;
+    return el("tr", {}, el("td", {}, esc(k)) + el("td", {}, n) +
+      el("td", {}, el("div", { "class": "bar" }, el("i", { style: "width:" + pct + "%" }))) + el("td", {}, pct + "%"));
+  }).join("");
+
+  var typeRows = Object.keys(byType).sort().map(function (k) {
+    return el("tr", {}, el("td", {}, esc(k)) + el("td", {}, byType[k]));
+  }).join("");
+
+  return el("h2", {}, "Reports") +
+    el("div", { "class": "sub" }, "A snapshot you can print or hand to a parent, tutor or advisor.") +
+    el("div", { "class": "grid g4" },
+      el("div", { "class": "card" }, el("h3", {}, "Assignments") + el("div", { "class": "kpi ink" }, r.totalAssignments)) +
+      el("div", { "class": "card" }, el("h3", {}, "Completion") + el("div", { "class": "kpi" }, r.completion === null ? "—" : r.completion + "%")) +
+      el("div", { "class": "card" }, el("h3", {}, "Study hours logged") + el("div", { "class": "kpi ink" }, r.studyHours)) +
+      el("div", { "class": "card" }, el("h3", {}, "Courses") + el("div", { "class": "kpi ink" }, r.courses))) +
+    el("div", { style: "height:14px" }) +
+    el("div", { "class": "grid g2" },
+      el("div", { "class": "card" }, el("h3", {}, "By status") +
+        el("div", { "class": "tblwrap" }, el("table", {}, statusRows))) +
+      el("div", { "class": "card" }, el("h3", {}, "By assignment type") +
+        (typeRows ? el("div", { "class": "tblwrap" }, el("table", {}, typeRows)) : el("div", { "class": "note" }, "No assignments yet.")))) +
+    el("div", { style: "height:14px" }) +
+    el("div", { "class": "card" }, el("h3", {}, "Data & backup") +
+      el("div", { "class": "row" },
+        el("button", { "class": "btn ghost", "data-csv": "1" }, "Export assignments CSV") +
+        el("button", { "class": "btn ghost", "data-backup": "1" }, "Export backup (JSON)") +
+        el("button", { "class": "btn ghost", "data-restore": "1" }, "Restore backup") +
+        el("button", { "class": "btn ghost", "data-print": "1" }, "Print report") +
+        el("button", { "class": "btn danger", "data-reset": "1" }, "Clear all data")) +
+      el("div", { "class": "note" }, "Your data lives in this browser only. Export a backup before clearing your browser or switching computers.") +
+      el("input", { type: "file", id: "restoreFile", accept: ".json,application/json", style: "display:none" }));
+}
+
+/* ---------- modals ---------- */
+
+function modalAssignment() {
+  var a = EDIT ? assignmentById(STATE.assignments, EDIT) : null;
+  var d = a || { title: "", courseId: STATE.courses.length ? STATE.courses[0].id : "", type: "homework", dueDate: todayISO(), status: "not-started", weight: 10, score: "", maxScore: 100, hours: 0, notes: "" };
+  return el("div", { "class": "sheet" },
+    el("h3", {}, a ? "Edit assignment" : "New assignment") +
+    el("div", { "class": "f" }, el("label", {}, "Title") + el("input", { id: "fTitle", value: esc(d.title), placeholder: "e.g. Problem Set 4" })) +
+    el("div", { "class": "grid g2" },
+      el("div", { "class": "f" }, el("label", {}, "Course") + el("select", { id: "fCourse" }, courseOpts(d.courseId))) +
+      el("div", { "class": "f" }, el("label", {}, "Type") + el("select", { id: "fType" }, opts(TYPES, d.type)))) +
+    el("div", { "class": "grid g2" },
+      el("div", { "class": "f" }, el("label", {}, "Due date") + el("input", { id: "fDue", type: "date", value: esc(d.dueDate) })) +
+      el("div", { "class": "f" }, el("label", {}, "Status") + el("select", { id: "fStatus" }, opts(STATUSES, d.status)))) +
+    el("div", { "class": "grid g3" },
+      el("div", { "class": "f" }, el("label", {}, "Weight %") + el("input", { id: "fWeight", type: "number", min: "0", step: "0.5", value: esc(d.weight) })) +
+      el("div", { "class": "f" }, el("label", {}, "Score") + el("input", { id: "fScore", type: "number", min: "0", step: "0.5", value: esc(d.score) })) +
+      el("div", { "class": "f" }, el("label", {}, "Out of") + el("input", { id: "fMax", type: "number", min: "0", step: "0.5", value: esc(d.maxScore) }))) +
+    el("div", { "class": "f" }, el("label", {}, "Study hours logged") + el("input", { id: "fHours", type: "number", min: "0", step: "0.25", value: esc(d.hours) })) +
+    el("div", { "class": "f" }, el("label", {}, "Notes") + el("textarea", { id: "fNotes", rows: "2" }, esc(d.notes || ""))) +
+    el("div", { "class": "row" }, el("button", { "class": "btn", "data-save-a": "1" }, "Save") +
+      el("button", { "class": "btn ghost", "data-close": "1" }, "Cancel")));
+}
+
+function modalCourse() {
+  var c = EDIT ? courseById(STATE.courses, EDIT) : null;
+  var d = c || { name: "", code: "", credits: 3, semester: "", instructor: "", finalGrade: "" };
+  return el("div", { "class": "sheet" },
+    el("h3", {}, c ? "Edit course" : "New course") +
+    el("div", { "class": "grid g2" },
+      el("div", { "class": "f" }, el("label", {}, "Course name") + el("input", { id: "cName", value: esc(d.name), placeholder: "e.g. Calculus II" })) +
+      el("div", { "class": "f" }, el("label", {}, "Code") + el("input", { id: "cCode", value: esc(d.code), placeholder: "MATH201" }))) +
+    el("div", { "class": "grid g3" },
+      el("div", { "class": "f" }, el("label", {}, "Credits") + el("input", { id: "cCredits", type: "number", min: "0", step: "0.5", value: esc(d.credits) })) +
+      el("div", { "class": "f" }, el("label", {}, "Semester") + el("input", { id: "cSem", value: esc(d.semester), placeholder: "Fall 2026" })) +
+      el("div", { "class": "f" }, el("label", {}, "Final grade") + el("select", { id: "cGrade" }, opts(LETTERS, d.finalGrade)))) +
+    el("div", { "class": "f" }, el("label", {}, "Instructor") + el("input", { id: "cInstr", value: esc(d.instructor || "") })) +
+    el("div", { "class": "note", style: "margin-bottom:12px" }, "Leave final grade blank while the course is running — the app projects it from your graded work.") +
+    el("div", { "class": "row" }, el("button", { "class": "btn", "data-save-c": "1" }, "Save") +
+      el("button", { "class": "btn ghost", "data-close": "1" }, "Cancel")));
+}
+
+function modalClass() {
+  return el("div", { "class": "sheet" },
+    el("h3", {}, "Add class to timetable") +
+    el("div", { "class": "f" }, el("label", {}, "Course") + el("select", { id: "tCourse" }, courseOpts(""))) +
+    el("div", { "class": "grid g3" },
+      el("div", { "class": "f" }, el("label", {}, "Day") + el("select", { id: "tDay" }, opts(DAYS, "Mon"))) +
+      el("div", { "class": "f" }, el("label", {}, "Start") + el("input", { id: "tStart", type: "time", value: "09:00" })) +
+      el("div", { "class": "f" }, el("label", {}, "End") + el("input", { id: "tEnd", type: "time", value: "10:30" }))) +
+    el("div", { "class": "f" }, el("label", {}, "Room") + el("input", { id: "tRoom", placeholder: "e.g. Maths A1" })) +
+    el("div", { "class": "row" }, el("button", { "class": "btn", "data-save-t": "1" }, "Add") +
+      el("button", { "class": "btn ghost", "data-close": "1" }, "Cancel")));
+}
+
+function modalExam() {
+  var e = EDIT ? (function () { for (var i = 0; i < STATE.exams.length; i++) if (STATE.exams[i].id === EDIT) return STATE.exams[i]; return null; })() : null;
+  var d = e || { title: "", courseId: STATE.courses.length ? STATE.courses[0].id : "", date: todayISO(), start: "09:00", location: "", weight: "", notes: "" };
+  return el("div", { "class": "sheet" },
+    el("h3", {}, e ? "Edit exam" : "New exam") +
+    el("div", { "class": "f" }, el("label", {}, "Exam title") + el("input", { id: "eTitle", value: esc(d.title), placeholder: "e.g. Calculus II Midterm" })) +
+    el("div", { "class": "grid g2" },
+      el("div", { "class": "f" }, el("label", {}, "Course") + el("select", { id: "eCourse" }, courseOpts(d.courseId))) +
+      el("div", { "class": "f" }, el("label", {}, "Weight % of grade") + el("input", { id: "eWeight", type: "number", min: "0", step: "1", value: esc(d.weight) }))) +
+    el("div", { "class": "grid g3" },
+      el("div", { "class": "f" }, el("label", {}, "Date") + el("input", { id: "eDate", type: "date", value: esc(d.date) })) +
+      el("div", { "class": "f" }, el("label", {}, "Start time") + el("input", { id: "eStart", type: "time", value: esc(d.start || "09:00") })) +
+      el("div", { "class": "f" }, el("label", {}, "Location") + el("input", { id: "eLoc", value: esc(d.location || "") }))) +
+    el("div", { "class": "f" }, el("label", {}, "Revision notes") + el("textarea", { id: "eNotes", rows: "2" }, esc(d.notes || ""))) +
+    el("div", { "class": "row" }, el("button", { "class": "btn", "data-save-e": "1" }, "Save") +
+      el("button", { "class": "btn ghost", "data-close": "1" }, "Cancel")));
+}
+
+/* ---------- render ---------- */
+
+function render() {
+  var body =
+    VIEW === "dash" ? viewDash() :
+      VIEW === "assignments" ? viewAssignments() :
+        VIEW === "courses" ? viewCourses() :
+          VIEW === "timetable" ? viewTimetable() :
+            VIEW === "exams" ? viewExams() :
+              VIEW === "grades" ? viewGrades() :
+                VIEW === "degree" ? viewDegree() :
+                  VIEW === "reports" ? viewReports() : "";
+
+  var tabs = TABS.map(function (t) {
+    return el("button", { "class": "tab" + (VIEW === t[0] ? " on" : ""), "data-tab": t[0] }, t[1]);
+  }).join("");
+
+  var modal = "";
+  if (MODAL === "assignment") modal = el("div", { "class": "modal", "data-modal": "1" }, modalAssignment());
+  if (MODAL === "course") modal = el("div", { "class": "modal", "data-modal": "1" }, modalCourse());
+  if (MODAL === "class") modal = el("div", { "class": "modal", "data-modal": "1" }, modalClass());
+  if (MODAL === "exam") modal = el("div", { "class": "modal", "data-modal": "1" }, modalExam());
+
+  document.getElementById("app").innerHTML =
+    el("div", { "class": "top" },
+      el("div", { "class": "brand" }, el("span", { "class": "dot" }) +
+        el("span", {}, "Assignment &amp; Study Tracker" + el("small", {}, "LEDGERLOOPSTUDIO"))) +
+      el("div", { "class": "tabs" }, tabs +
+        el("button", { "class": "tab", "data-dark": "1" }, STATE.settings.dark === "1" ? "☀ Light" : "☾ Dark"))) +
+    el("div", { "class": "wrap" }, body +
+      el("div", { "class": "foot" }, "Works offline · no account · no subscription · your data stays in this browser")) +
+    modal;
+}
+
+function val(id) { var e = document.getElementById(id); return e ? e.value : ""; }
+function num(id) { var v = val(id); return v === "" ? "" : Number(v); }
+
+function download(name, text, mime) {
+  var b = new Blob([text], { type: mime || "text/plain;charset=utf-8" });
+  var u = URL.createObjectURL(b), a = document.createElement("a");
+  a.href = u; a.download = name; document.body.appendChild(a); a.click();
+  document.body.removeChild(a); setTimeout(function () { URL.revokeObjectURL(u); }, 1200);
+}
+
+document.addEventListener("click", function (ev) {
+  var t = ev.target;
+  if (!(t && t.getAttribute)) return;
+  var g = function (k) { return t.getAttribute(k); };
+
+  if (g("data-tab")) { VIEW = g("data-tab"); MODAL = null; EDIT = null; render(); return; }
+  if (g("data-dark")) { STATE.settings.dark = STATE.settings.dark === "1" ? "0" : "1"; document.documentElement.setAttribute("data-dark", STATE.settings.dark); save(); render(); return; }
+  if (g("data-close") || (g("data-modal") && t.className === "modal")) { MODAL = null; EDIT = null; render(); return; }
+
+  if (g("data-new-a")) {
+    if (!STATE.courses.length) { alert("Add a course first, then link assignments to it."); return; }
+    MODAL = "assignment"; EDIT = null; render(); return;
+  }
+  if (g("data-edit-a")) { MODAL = "assignment"; EDIT = g("data-edit-a"); render(); return; }
+  if (g("data-del-a")) {
+    var ida = g("data-del-a");
+    if (confirm("Delete this assignment?")) {
+      STATE.assignments = STATE.assignments.filter(function (a) { return a.id !== ida; });
+      save(); render();
+    } return;
+  }
+  if (g("data-save-a")) {
+    var title = val("fTitle").trim();
+    if (!title) { alert("Give the assignment a title."); return; }
+    var rec = {
+      id: EDIT || uid(), courseId: val("fCourse"), title: title, type: val("fType"),
+      dueDate: val("fDue"), status: val("fStatus"), weight: num("fWeight"),
+      score: num("fScore"), maxScore: num("fMax"), hours: num("fHours"), notes: val("fNotes")
+    };
+    if (EDIT) {
+      STATE.assignments = STATE.assignments.map(function (a) { return a.id === EDIT ? rec : a; });
+    } else { if(demoLimitReached()) return; STATE.assignments.push(rec); }
+    MODAL = null; EDIT = null; save(); render(); return;
+  }
+
+  if (g("data-new-c")) { MODAL = "course"; EDIT = null; render(); return; }
+  if (g("data-edit-c")) { MODAL = "course"; EDIT = g("data-edit-c"); render(); return; }
+  if (g("data-del-c")) {
+    var idc = g("data-del-c");
+    var n = assignmentsForCourse(STATE.assignments, idc).length;
+    if (confirm(n ? "Delete this course? " + n + " linked assignment(s) will keep their data but lose the course link." : "Delete this course?")) {
+      STATE.courses = STATE.courses.filter(function (c) { return c.id !== idc; });
+      STATE.classes = STATE.classes.filter(function (c) { return c.courseId !== idc; });
+      save(); render();
+    } return;
+  }
+  if (g("data-save-c")) {
+    var nm = val("cName").trim();
+    if (!nm) { alert("Give the course a name."); return; }
+    var recc = {
+      id: EDIT || uid(), name: nm, code: val("cCode"), credits: num("cCredits"),
+      semester: val("cSem"), instructor: val("cInstr"), finalGrade: val("cGrade")
+    };
+    if (EDIT) { STATE.courses = STATE.courses.map(function (c) { return c.id === EDIT ? recc : c; }); }
+    else { STATE.courses.push(recc); }
+    MODAL = null; EDIT = null; save(); render(); return;
+  }
+
+  if (g("data-new-t")) {
+    if (!STATE.courses.length) { alert("Add a course first."); return; }
+    MODAL = "class"; render(); return;
+  }
+  if (g("data-save-t")) {
+    STATE.classes.push({
+      id: uid(), courseId: val("tCourse"), day: val("tDay"),
+      start: val("tStart"), end: val("tEnd"), room: val("tRoom")
+    });
+    MODAL = null; save(); render(); return;
+  }
+  if (g("data-del-t")) {
+    var idt = g("data-del-t");
+    STATE.classes = STATE.classes.filter(function (c) { return c.id !== idt; });
+    save(); render(); return;
+  }
+
+  if (g("data-new-e")) {
+    if (!STATE.courses.length) { alert("Add a course first."); return; }
+    MODAL = "exam"; EDIT = null; render(); return;
+  }
+  if (g("data-edit-e")) { MODAL = "exam"; EDIT = g("data-edit-e"); render(); return; }
+  if (g("data-del-e")) {
+    var ide = g("data-del-e");
+    if (confirm("Delete this exam?")) {
+      STATE.exams = STATE.exams.filter(function (x) { return x.id !== ide; });
+      save(); render();
+    } return;
+  }
+  if (g("data-save-e")) {
+    var et = val("eTitle").trim();
+    if (!et) { alert("Give the exam a title."); return; }
+    var rece = {
+      id: EDIT || uid(), courseId: val("eCourse"), title: et, date: val("eDate"),
+      start: val("eStart"), location: val("eLoc"), weight: num("eWeight"), notes: val("eNotes")
+    };
+    if (EDIT) { STATE.exams = STATE.exams.map(function (x) { return x.id === EDIT ? rece : x; }); }
+    else { STATE.exams.push(rece); }
+    MODAL = null; EDIT = null; save(); render(); return;
+  }
+
+  if (g("data-save-plan")) {
+    STATE.settings.degreeCredits = num("setCredits") || 0;
+    STATE.settings.targetGPA = num("setGpa") || 0;
+    save(); render(); return;
+  }
+
+  if (g("data-csv")) { download("assignments.csv", toCSV(STATE.assignments, STATE.courses), "text/csv;charset=utf-8"); return; }
+  if (g("data-backup")) { download("assignment-tracker-backup.json", JSON.stringify(STATE, null, 2), "application/json"); return; }
+  if (g("data-restore")) { var f = document.getElementById("restoreFile"); if (f) f.click(); return; }
+  if (g("data-print")) { window.print(); return; }
+  if (g("data-reset")) {
+    if (confirm("Clear ALL data in this browser? Export a backup first if you might want it back.")) {
+      STATE = blank(); save(); VIEW = "dash"; render();
+    } return;
+  }
+});
+
+document.addEventListener("change", function (ev) {
+  if (ev.target && ev.target.id === "restoreFile") {
+    var file = ev.target.files && ev.target.files[0];
+    if (!file) return;
+    var r = new FileReader();
+    r.onload = function () {
+      try {
+        var obj = JSON.parse(r.result);
+        if (!obj || !obj.assignments) throw new Error("bad");
+        STATE = obj;
+        if (!STATE.settings) STATE.settings = { dark: "0", degreeCredits: 120, targetGPA: 3.5 };
+        if (!STATE.classes) STATE.classes = [];
+        if (!STATE.exams) STATE.exams = [];
+        document.documentElement.setAttribute("data-dark", STATE.settings.dark === "1" ? "1" : "0");
+        save(); render();
+        alert("Backup restored.");
+      } catch (e) { alert("That file could not be read as a backup."); }
+    };
+    r.readAsText(file);
+  }
+});
+
+load();
+render();
+</script>
+</body></html>
