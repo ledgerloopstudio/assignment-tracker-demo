@@ -514,13 +514,13 @@ function viewDash() {
     var d = daysUntil(t, e.date);
     return el("tr", {}, el("td", {}, esc(e.title) + el("div", { "class": "note" }, esc(courseName(e.courseId)) + (e.location ? " · " + esc(e.location) : ""))) +
       el("td", { style: "text-align:right" }, esc(e.date) + "<br>" +
-        el("span", { "class": "pill " + (d <= 7 ? "amber" : "") }, "in " + d + "d"));
+        el("span", { "class": "pill " + (d <= 7 ? "amber" : "") }, "in " + d + "d")));
   }, "No exams in the next 30 days.");
 
   var today = timetableForDay(STATE.classes, DAYS[Math.min(Math.max(new Date().getDay() - 1, 0), 4)]);
   var ttCard = listCard("Today's classes", today, function (c) {
     return el("tr", {}, el("td", {}, esc(courseName(c.courseId)) + el("div", { "class": "note" }, esc(c.room || ""))) +
-      el("td", { style: "text-align:right" }, esc(c.start) + " – " + esc(c.end));
+      el("td", { style: "text-align:right" }, esc(c.start) + " – " + esc(c.end)));
   }, "No classes scheduled for today.");
 
   return el("h2", {}, "Dashboard") + el("div", { "class": "sub" }, "Everything due, graded and scheduled — in one screen.") +
