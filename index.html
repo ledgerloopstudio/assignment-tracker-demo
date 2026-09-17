@@ -891,7 +891,7 @@ function render() {
       el("div", { "class": "brand" }, el("span", { "class": "dot" }) +
         el("span", {}, "Assignment &amp; Study Tracker" + el("small", {}, "LEDGERLOOPSTUDIO"))) +
       el("div", { "class": "tabs" }, tabs +
-        el("button", { "class": "tab", "data-dark": "1" }, STATE.settings.dark === "1" ? "☀ Light" : "☾ Dark"))) +
+        el("button", { "class": "tab", "data-toggledark": "1" }, STATE.settings.dark === "1" ? "☀ Light" : "☾ Dark"))) +
     el("div", { "class": "wrap" }, body +
       el("div", { "class": "foot" }, "Works offline · no account · no subscription · your data stays in this browser")) +
     modal;
@@ -913,7 +913,7 @@ document.addEventListener("click", function (ev) {
   var g = function (k) { return t.getAttribute(k); };
 
   if (g("data-tab")) { VIEW = g("data-tab"); MODAL = null; EDIT = null; render(); return; }
-  if (g("data-dark")) { STATE.settings.dark = STATE.settings.dark === "1" ? "0" : "1"; document.documentElement.setAttribute("data-dark", STATE.settings.dark); save(); render(); return; }
+  if (g("data-toggledark")) { STATE.settings.dark = STATE.settings.dark === "1" ? "0" : "1"; document.documentElement.setAttribute("data-dark", STATE.settings.dark); save(); render(); return; }
   if (g("data-close") || (g("data-modal") && t.className === "modal")) { MODAL = null; EDIT = null; render(); return; }
 
   if (g("data-new-a")) {
