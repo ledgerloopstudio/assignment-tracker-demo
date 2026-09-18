@@ -93,9 +93,11 @@ label{display:block;font-size:12px;font-weight:700;color:var(--muted);margin-bot
 .demo-banner a{color:#fff;text-decoration:underline}
 .demo-banner .x{position:absolute;right:10px;top:6px;background:none;border:none;color:#fff;font:inherit;cursor:pointer;opacity:.85;padding:4px 8px}
 .demo-banner .x:hover{opacity:1}
+.buildstamp{max-width:1180px;margin:0 auto;padding:4px 22px 30px;color:#8A9AA5;font-size:11px;letter-spacing:.04em;text-align:right}
 </style></head><body>
-<div class="demo-banner" id="demoBanner">DEMO — example data, add up to 15 of your own assignments and see whether it thinks the way you do. Nothing is saved permanently and it can reset any time. <a href="https://www.etsy.com/shop/LedgerLoopStudio" target="_blank" rel="noopener">Buy the full version</a> for your own unlimited, permanent copy.<button class="x" onclick="document.getElementById('demoBanner').style.display='none'" aria-label="Dismiss">✕</button></div>
+<div class="demo-banner" id="demoBanner">DEMO â example data, add up to 15 of your own assignments and see whether it thinks the way you do. Nothing is saved permanently and it can reset any time. <a href="https://www.etsy.com/shop/LedgerLoopStudio" target="_blank" rel="noopener">Buy the full version</a> for your own unlimited, permanent copy.<button class="x" onclick="document.getElementById('demoBanner').style.display='none'" aria-label="Dismiss">â</button></div>
 <div id="app"></div>
+<div class="buildstamp noprint">Assignment &amp; Study Tracker &middot; build 2026-09-18 &middot; LedgerLoopStudio</div>
 <script id="engine">
 /* ===== ENGINE: pure functions, no DOM. Unit-testable in plain Node. ===== */
 
@@ -355,7 +357,7 @@ var DEMO_MODE = true, DEMO_ASSIGN_LIMIT = 22; /* 7 seeded + 15 room to try addin
 function demoLimitReached(){
   if(!DEMO_MODE) return false;
   if(!STATE || !STATE.assignments || STATE.assignments.length < DEMO_ASSIGN_LIMIT) return false;
-  alert("You've reached the "+DEMO_ASSIGN_LIMIT+"-assignment demo limit.\n\nThis is just a preview — buy the full version for unlimited assignments, all features unlocked, and your own permanent copy.");
+  alert("You've reached the "+DEMO_ASSIGN_LIMIT+"-assignment demo limit.\n\nThis is just a preview â buy the full version for unlimited assignments, all features unlocked, and your own permanent copy.");
   return true;
 }
 var STATE = null, VIEW = "dash", MODAL = null, EDIT = null, TTDAY = "Mon";
@@ -447,7 +449,7 @@ function urgPill(dueISO, status) {
   return el("span", { "class": "pill" }, "No date");
 }
 
-function courseName(id) { var c = courseById(STATE.courses, id); return c ? c.name : "—"; }
+function courseName(id) { var c = courseById(STATE.courses, id); return c ? c.name : "â"; }
 function courseOpts(sel) {
   return STATE.courses.map(function (c) {
     return el("option", { value: c.id, selected: c.id === sel ? "selected" : null }, esc(c.name + (c.code ? " (" + c.code + ")" : "")));
@@ -455,7 +457,7 @@ function courseOpts(sel) {
 }
 function opts(list, sel) {
   return list.map(function (v) {
-    return el("option", { value: v, selected: v === sel ? "selected" : null }, esc(v === "" ? "—" : v));
+    return el("option", { value: v, selected: v === sel ? "selected" : null }, esc(v === "" ? "â" : v));
   }).join("");
 }
 
@@ -481,7 +483,7 @@ function viewDash() {
       el("div", { "class": "kpi " + (r.dueThisWeek ? "warn" : "") }, r.dueThisWeek) +
       el("div", { "class": "note" }, "Next 7 days")) +
     el("div", { "class": "card" }, el("h3", {}, "Current GPA") +
-      el("div", { "class": "kpi" }, gpa === null ? "—" : gpa.toFixed(2)) +
+      el("div", { "class": "kpi" }, gpa === null ? "â" : gpa.toFixed(2)) +
       el("div", { "class": "note" }, gpa === null ? "Grade something to calculate" :
         (target > 0 ? (gpa >= target ? "At or above your " + target.toFixed(2) + " target" : (target - gpa).toFixed(2) + " below target") : "No target set")))
   );
@@ -490,8 +492,8 @@ function viewDash() {
     el("h3", {}, "Semester progress") +
     el("div", { "class": "row" }, el("div", { style: "flex:1" }, el("div", { "class": "bar" },
       el("i", { style: "width:" + r.completion + "%" }))) + el("b", {}, r.completion + "%")) +
-    el("div", { "class": "note" }, r.byStatus["submitted"] + " submitted · " + r.byStatus["graded"] +
-      " graded · " + r.byStatus["in-progress"] + " in progress · " + r.byStatus["not-started"] + " not started"));
+    el("div", { "class": "note" }, r.byStatus["submitted"] + " submitted Â· " + r.byStatus["graded"] +
+      " graded Â· " + r.byStatus["in-progress"] + " in progress Â· " + r.byStatus["not-started"] + " not started"));
 
   function listCard(title, items, renderer, emptyMsg) {
     var body = items.length
@@ -503,16 +505,16 @@ function viewDash() {
   var overCard = listCard("Overdue", over, function (a) {
     return el("tr", {}, el("td", {}, esc(a.title) + el("div", { "class": "note" }, esc(courseName(a.courseId)))) +
       el("td", { style: "text-align:right" }, urgPill(a.dueDate, a.status)));
-  }, "Nothing overdue — good.");
+  }, "Nothing overdue â good.");
 
   var soonCard = listCard("Due in the next 10 days", soon, function (a) {
-    return el("tr", {}, el("td", {}, esc(a.title) + el("div", { "class": "note" }, esc(courseName(a.courseId)) + " · " + esc(a.type))) +
+    return el("tr", {}, el("td", {}, esc(a.title) + el("div", { "class": "note" }, esc(courseName(a.courseId)) + " Â· " + esc(a.type))) +
       el("td", { style: "text-align:right" }, esc(a.dueDate) + "<br>" + urgPill(a.dueDate, a.status)));
   }, "Nothing due in the next 10 days.");
 
   var examCard = listCard("Exams in the next 30 days", ex, function (e) {
     var d = daysUntil(t, e.date);
-    return el("tr", {}, el("td", {}, esc(e.title) + el("div", { "class": "note" }, esc(courseName(e.courseId)) + (e.location ? " · " + esc(e.location) : ""))) +
+    return el("tr", {}, el("td", {}, esc(e.title) + el("div", { "class": "note" }, esc(courseName(e.courseId)) + (e.location ? " Â· " + esc(e.location) : ""))) +
       el("td", { style: "text-align:right" }, esc(e.date) + "<br>" +
         el("span", { "class": "pill " + (d <= 7 ? "amber" : "") }, "in " + d + "d")));
   }, "No exams in the next 30 days.");
@@ -520,10 +522,10 @@ function viewDash() {
   var today = timetableForDay(STATE.classes, DAYS[Math.min(Math.max(new Date().getDay() - 1, 0), 4)]);
   var ttCard = listCard("Today's classes", today, function (c) {
     return el("tr", {}, el("td", {}, esc(courseName(c.courseId)) + el("div", { "class": "note" }, esc(c.room || ""))) +
-      el("td", { style: "text-align:right" }, esc(c.start) + " – " + esc(c.end)));
+      el("td", { style: "text-align:right" }, esc(c.start) + " â " + esc(c.end)));
   }, "No classes scheduled for today.");
 
-  return el("h2", {}, "Dashboard") + el("div", { "class": "sub" }, "Everything due, graded and scheduled — in one screen.") +
+  return el("h2", {}, "Dashboard") + el("div", { "class": "sub" }, "Everything due, graded and scheduled â in one screen.") +
     kpis + el("div", { style: "height:14px" }) + prog + el("div", { style: "height:14px" }) +
     el("div", { "class": "grid g2" }, overCard + soonCard) + el("div", { style: "height:14px" }) +
     el("div", { "class": "grid g2" }, examCard + ttCard);
@@ -540,14 +542,14 @@ function viewAssignments() {
       el("td", {}, el("b", {}, esc(a.title)) + el("div", { "class": "note" }, esc(a.notes || ""))) +
       el("td", {}, esc(courseName(a.courseId))) +
       el("td", {}, el("span", { "class": "pill" }, esc(a.type))) +
-      el("td", {}, esc(a.dueDate || "—")) +
+      el("td", {}, esc(a.dueDate || "â")) +
       el("td", {}, urgPill(a.dueDate, a.status)) +
-      el("td", {}, a.weight === "" || a.weight === null ? "—" : esc(a.weight) + "%") +
-      el("td", {}, pct === null ? "—" : pct + "%") +
-      el("td", {}, Number(a.hours) > 0 ? esc(a.hours) + "h" : "—") +
+      el("td", {}, a.weight === "" || a.weight === null ? "â" : esc(a.weight) + "%") +
+      el("td", {}, pct === null ? "â" : pct + "%") +
+      el("td", {}, Number(a.hours) > 0 ? esc(a.hours) + "h" : "â") +
       el("td", { style: "text-align:right;white-space:nowrap" },
         el("button", { "class": "btn ghost sm", "data-edit-a": a.id }, "Edit") + " " +
-        el("button", { "class": "btn danger sm", "data-del-a": a.id }, "×"))
+        el("button", { "class": "btn danger sm", "data-del-a": a.id }, "Ã"))
     );
   }).join("");
 
@@ -572,15 +574,15 @@ function viewCourses() {
     var mine = assignmentsForCourse(STATE.assignments, c.id);
     var comp = completionPct(mine);
     return el("tr", {},
-      el("td", {}, el("b", {}, esc(c.name)) + el("div", { "class": "note" }, esc(c.code || "") + (c.instructor ? " · " + esc(c.instructor) : ""))) +
-      el("td", {}, esc(c.semester || "—")) +
+      el("td", {}, el("b", {}, esc(c.name)) + el("div", { "class": "note" }, esc(c.code || "") + (c.instructor ? " Â· " + esc(c.instructor) : ""))) +
+      el("td", {}, esc(c.semester || "â")) +
       el("td", {}, esc(c.credits || 0)) +
       el("td", {}, mine.length + el("div", { "class": "note" }, comp === null ? "" : comp + "% done")) +
-      el("td", {}, pct === null ? "—" : pct + "%") +
-      el("td", {}, letter ? el("span", { "class": "pill ok" }, esc(letter)) + (c.finalGrade ? el("div", { "class": "note" }, "final") : el("div", { "class": "note" }, "projected")) : "—") +
+      el("td", {}, pct === null ? "â" : pct + "%") +
+      el("td", {}, letter ? el("span", { "class": "pill ok" }, esc(letter)) + (c.finalGrade ? el("div", { "class": "note" }, "final") : el("div", { "class": "note" }, "projected")) : "â") +
       el("td", { style: "text-align:right;white-space:nowrap" },
         el("button", { "class": "btn ghost sm", "data-edit-c": c.id }, "Edit") + " " +
-        el("button", { "class": "btn danger sm", "data-del-c": c.id }, "×"))
+        el("button", { "class": "btn danger sm", "data-del-c": c.id }, "Ã"))
     );
   }).join("");
 
@@ -599,9 +601,9 @@ function viewTimetable() {
   var cols = DAYS.map(function (d) {
     var slots = timetableForDay(STATE.classes, d).map(function (c) {
       return el("div", { "class": "slot" }, el("b", {}, esc(courseName(c.courseId))) +
-        el("i", {}, esc(c.start) + "–" + esc(c.end) + (c.room ? " · " + esc(c.room) : "")) +
+        el("i", {}, esc(c.start) + "â" + esc(c.end) + (c.room ? " Â· " + esc(c.room) : "")) +
         el("button", { "class": "btn danger sm", "data-del-t": c.id, style: "margin-top:5px" }, "Remove"));
-    }).join("") || el("div", { "class": "note" }, "—");
+    }).join("") || el("div", { "class": "note" }, "â");
     return el("div", { "class": "col" }, el("b", {}, d) + slots);
   }).join("");
 
@@ -623,13 +625,13 @@ function viewExams() {
     return el("tr", {},
       el("td", {}, el("b", {}, esc(e.title)) + el("div", { "class": "note" }, esc(e.notes || ""))) +
       el("td", {}, esc(courseName(e.courseId))) +
-      el("td", {}, esc(e.date || "—") + (e.start ? el("div", { "class": "note" }, esc(e.start)) : "")) +
+      el("td", {}, esc(e.date || "â") + (e.start ? el("div", { "class": "note" }, esc(e.start)) : "")) +
       el("td", {}, pill) +
-      el("td", {}, esc(e.location || "—")) +
-      el("td", {}, e.weight ? esc(e.weight) + "%" : "—") +
+      el("td", {}, esc(e.location || "â")) +
+      el("td", {}, e.weight ? esc(e.weight) + "%" : "â") +
       el("td", { style: "text-align:right;white-space:nowrap" },
         el("button", { "class": "btn ghost sm", "data-edit-e": e.id }, "Edit") + " " +
-        el("button", { "class": "btn danger sm", "data-del-e": e.id }, "×"))
+        el("button", { "class": "btn danger sm", "data-del-e": e.id }, "Ã"))
     );
   }).join("");
 
@@ -652,7 +654,7 @@ function viewGrades() {
   var semRows = Object.keys(bySem).sort().map(function (s) {
     var g = bySem[s];
     return el("tr", {}, el("td", {}, esc(s)) +
-      el("td", {}, g === null ? "—" : g.toFixed(2)) +
+      el("td", {}, g === null ? "â" : g.toFixed(2)) +
       el("td", {}, g === null ? "" : el("div", { "class": "bar" },
         el("i", { "class": g >= 3.5 ? "" : g >= 2.5 ? "warn" : "bad", style: "width:" + Math.round((g / 4) * 100) + "%" }))));
   }).join("");
@@ -665,20 +667,20 @@ function viewGrades() {
     return el("tr", {},
       el("td", {}, esc(c.name) + el("div", { "class": "note" }, graded + " graded item" + (graded === 1 ? "" : "s"))) +
       el("td", {}, esc(c.credits || 0)) +
-      el("td", {}, pct === null ? "—" : pct + "%") +
-      el("td", {}, letter ? esc(letter) : "—") +
-      el("td", {}, gp === null ? "—" : gp.toFixed(1)) +
-      el("td", {}, gp === null || !(Number(c.credits) > 0) ? "—" : (gp * Number(c.credits)).toFixed(1)));
+      el("td", {}, pct === null ? "â" : pct + "%") +
+      el("td", {}, letter ? esc(letter) : "â") +
+      el("td", {}, gp === null ? "â" : gp.toFixed(1)) +
+      el("td", {}, gp === null || !(Number(c.credits) > 0) ? "â" : (gp * Number(c.credits)).toFixed(1)));
   }).join("");
 
   return el("h2", {}, "Grades & GPA") +
     el("div", { "class": "sub" }, "GPA is credit-weighted on a 4.0 scale. A course with no final grade uses its projected grade from graded work.") +
     el("div", { "class": "grid g3" },
       el("div", { "class": "card" }, el("h3", {}, "Cumulative GPA") +
-        el("div", { "class": "kpi" }, gpa === null ? "—" : gpa.toFixed(2)) +
+        el("div", { "class": "kpi" }, gpa === null ? "â" : gpa.toFixed(2)) +
         el("div", { "class": "note" }, "out of 4.00")) +
       el("div", { "class": "card" }, el("h3", {}, "Target GPA") +
-        el("div", { "class": "kpi ink" }, target > 0 ? target.toFixed(2) : "—") +
+        el("div", { "class": "kpi ink" }, target > 0 ? target.toFixed(2) : "â") +
         el("div", { "class": "note" }, gpa === null || !(target > 0) ? "Set in Degree Plan" :
           (gpa >= target ? "On track" : (target - gpa).toFixed(2) + " to go"))) +
       el("div", { "class": "card" }, el("h3", {}, "Credits earned") +
@@ -692,7 +694,7 @@ function viewGrades() {
           : el("div", { "class": "note" }, "Add courses with a semester to see this."))) +
       el("div", { "class": "card" }, el("h3", {}, "Grade points by course") +
         (courseRows ? el("div", { "class": "tblwrap" }, el("table", {},
-          el("tr", {}, ["Course", "Cr", "Weighted %", "Grade", "Points", "Cr × Pts"].map(function (h) { return el("th", {}, h); }).join("")) + courseRows))
+          el("tr", {}, ["Course", "Cr", "Weighted %", "Grade", "Points", "Cr Ã Pts"].map(function (h) { return el("th", {}, h); }).join("")) + courseRows))
           : el("div", { "class": "note" }, "No courses yet."))));
 }
 
@@ -717,11 +719,11 @@ function viewDegree() {
     return el("div", { "class": "card" },
       el("h3", {}, esc(s)) +
       el("div", { "class": "row" }, el("span", { "class": "pill blue" }, cr + " credits") + " " +
-        el("span", { "class": "pill" }, "GPA " + (sg === null ? "—" : sg.toFixed(2)))) +
+        el("span", { "class": "pill" }, "GPA " + (sg === null ? "â" : sg.toFixed(2)))) +
       el("div", { style: "margin-top:9px" }, list.map(function (c) {
         var letter = c.finalGrade || "";
         return el("div", { "class": "note", style: "margin-bottom:3px" },
-          esc(c.name) + " · " + (Number(c.credits) || 0) + "cr" + (letter ? " · " + esc(letter) : ""));
+          esc(c.name) + " Â· " + (Number(c.credits) || 0) + "cr" + (letter ? " Â· " + esc(letter) : ""));
       }).join("")));
   }).join("");
 
@@ -729,9 +731,9 @@ function viewDegree() {
     el("div", { "class": "sub" }, "Multi-year view: how many credits you have, how many are left, and where your GPA sits against your target.") +
     el("div", { "class": "grid g4" },
       el("div", { "class": "card" }, el("h3", {}, "Credits earned") + el("div", { "class": "kpi" }, earned)) +
-      el("div", { "class": "card" }, el("h3", {}, "Credits required") + el("div", { "class": "kpi ink" }, need > 0 ? need : "—")) +
-      el("div", { "class": "card" }, el("h3", {}, "Credits remaining") + el("div", { "class": "kpi warn" }, left === null ? "—" : left)) +
-      el("div", { "class": "card" }, el("h3", {}, "Cumulative GPA") + el("div", { "class": "kpi" }, gpa === null ? "—" : gpa.toFixed(2)))) +
+      el("div", { "class": "card" }, el("h3", {}, "Credits required") + el("div", { "class": "kpi ink" }, need > 0 ? need : "â")) +
+      el("div", { "class": "card" }, el("h3", {}, "Credits remaining") + el("div", { "class": "kpi warn" }, left === null ? "â" : left)) +
+      el("div", { "class": "card" }, el("h3", {}, "Cumulative GPA") + el("div", { "class": "kpi" }, gpa === null ? "â" : gpa.toFixed(2)))) +
     el("div", { style: "height:14px" }) +
     (pctDone === null ? "" : el("div", { "class": "card" }, el("h3", {}, "Degree progress") +
       el("div", { "class": "row" }, el("div", { style: "flex:1" }, el("div", { "class": "bar" }, el("i", { style: "width:" + pctDone + "%" }))) + el("b", {}, pctDone + "%")) +
@@ -769,7 +771,7 @@ function viewReports() {
     el("div", { "class": "sub" }, "A snapshot you can print or hand to a parent, tutor or advisor.") +
     el("div", { "class": "grid g4" },
       el("div", { "class": "card" }, el("h3", {}, "Assignments") + el("div", { "class": "kpi ink" }, r.totalAssignments)) +
-      el("div", { "class": "card" }, el("h3", {}, "Completion") + el("div", { "class": "kpi" }, r.completion === null ? "—" : r.completion + "%")) +
+      el("div", { "class": "card" }, el("h3", {}, "Completion") + el("div", { "class": "kpi" }, r.completion === null ? "â" : r.completion + "%")) +
       el("div", { "class": "card" }, el("h3", {}, "Study hours logged") + el("div", { "class": "kpi ink" }, r.studyHours)) +
       el("div", { "class": "card" }, el("h3", {}, "Courses") + el("div", { "class": "kpi ink" }, r.courses))) +
     el("div", { style: "height:14px" }) +
@@ -827,7 +829,7 @@ function modalCourse() {
       el("div", { "class": "f" }, el("label", {}, "Semester") + el("input", { id: "cSem", value: esc(d.semester), placeholder: "Fall 2026" })) +
       el("div", { "class": "f" }, el("label", {}, "Final grade") + el("select", { id: "cGrade" }, opts(LETTERS, d.finalGrade)))) +
     el("div", { "class": "f" }, el("label", {}, "Instructor") + el("input", { id: "cInstr", value: esc(d.instructor || "") })) +
-    el("div", { "class": "note", style: "margin-bottom:12px" }, "Leave final grade blank while the course is running — the app projects it from your graded work.") +
+    el("div", { "class": "note", style: "margin-bottom:12px" }, "Leave final grade blank while the course is running â the app projects it from your graded work.") +
     el("div", { "class": "row" }, el("button", { "class": "btn", "data-save-c": "1" }, "Save") +
       el("button", { "class": "btn ghost", "data-close": "1" }, "Cancel")));
 }
@@ -891,9 +893,9 @@ function render() {
       el("div", { "class": "brand" }, el("span", { "class": "dot" }) +
         el("span", {}, "Assignment &amp; Study Tracker" + el("small", {}, "LEDGERLOOPSTUDIO"))) +
       el("div", { "class": "tabs" }, tabs +
-        el("button", { "class": "tab", "data-toggledark": "1" }, STATE.settings.dark === "1" ? "☀ Light" : "☾ Dark"))) +
+        el("button", { "class": "tab", "data-toggledark": "1" }, STATE.settings.dark === "1" ? "â Light" : "â¾ Dark"))) +
     el("div", { "class": "wrap" }, body +
-      el("div", { "class": "foot" }, "Works offline · no account · no subscription · your data stays in this browser")) +
+      el("div", { "class": "foot" }, "Works offline Â· no account Â· no subscription Â· your data stays in this browser")) +
     modal;
 }
 
